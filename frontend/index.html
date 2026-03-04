@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickRecap</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app">
+        <header class="header">
+            <h1><span class="accent">Quick</span>Recap</h1>
+            <p class="tagline">Paste text. 5 AI agents analyze it simultaneously.</p>
+        </header>
+        <section class="input-section">
+            <textarea id="text-input" placeholder="Paste your text here..." rows="8"></textarea>
+            <button class="analyze-btn" id="analyze-btn" onclick="analyze()">Analyze</button>
+        </section>
+        <div class="status-bar" id="status-bar" style="display:none;">
+            <div class="status-dot"></div>
+            <span id="status-text"></span>
+        </div>
+        <section class="results-grid" id="results-grid" style="display:none;">
+            <div class="result-card" id="card-summary"><div class="card-header">Summary</div><div class="card-body" id="body-summary"></div></div>
+            <div class="result-card" id="card-key_points"><div class="card-header">Key Points</div><div class="card-body" id="body-key_points"></div></div>
+            <div class="result-card" id="card-action_items"><div class="card-header">Action Items</div><div class="card-body" id="body-action_items"></div></div>
+            <div class="result-card" id="card-questions"><div class="card-header">Open Questions</div><div class="card-body" id="body-questions"></div></div>
+            <div class="result-card card-wide" id="card-quiz"><div class="card-header">Quiz</div><div class="card-body" id="body-quiz"></div></div>
+        </section>
+        <footer class="footer"><p>QuickRecap / Parallel AI analysis</p></footer>
+    </div>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
