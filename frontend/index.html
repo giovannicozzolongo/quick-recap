@@ -12,25 +12,83 @@
     <div class="app">
         <header class="header">
             <h1><span class="accent">Quick</span>Recap</h1>
-            <p class="tagline">Paste text. 5 AI agents analyze it simultaneously.</p>
+            <p class="tagline">Paste text or record your voice. 5 AI agents analyze it simultaneously.</p>
         </header>
+
         <section class="input-section">
-            <textarea id="text-input" placeholder="Paste your text here..." rows="8"></textarea>
+            <div class="input-columns">
+                <div class="input-col">
+                    <div class="col-header">
+                        <span class="col-title">Text</span>
+                        <button class="reset-btn" onclick="resetText()" title="Clear text">Clear</button>
+                    </div>
+                    <textarea id="text-input" placeholder="Paste your text here (meeting notes, article, lecture transcript, anything)..." rows="8" maxlength="10000" oninput="updateCharCount()"></textarea>
+                <div class="char-count" id="char-count">0 / 10,000</div>
+                </div>
+
+                <div class="input-divider"></div>
+
+                <div class="input-col">
+                    <div class="col-header">
+                        <span class="col-title">Voice</span>
+                        <button class="reset-btn" onclick="resetVoice()" title="Clear recording">Clear</button>
+                    </div>
+                    <div class="voice-panel">
+                        <div class="voice-controls">
+                            <button class="record-btn" id="record-btn" onclick="toggleRecording()">
+                                <span class="record-icon" id="record-icon">&#9679;</span>
+                                <span id="record-label">Record</span>
+                            </button>
+                            <button class="pause-btn" id="pause-btn" onclick="togglePause()" style="display:none;">
+                                <span id="pause-label">Pause</span>
+                            </button>
+                            <button class="stop-btn" id="stop-btn" onclick="stopRecording()" style="display:none;">Stop</button>
+                            <span class="recording-time" id="recording-time"></span>
+                        </div>
+                        <div class="transcript-preview" id="transcript-preview" style="display:none;">
+                            <label>Transcript:</label>
+                            <p id="transcript-text"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <button class="analyze-btn" id="analyze-btn" onclick="analyze()">Analyze</button>
         </section>
+
         <div class="status-bar" id="status-bar" style="display:none;">
             <div class="status-dot"></div>
             <span id="status-text"></span>
         </div>
+
         <section class="results-grid" id="results-grid" style="display:none;">
-            <div class="result-card" id="card-summary"><div class="card-header">Summary</div><div class="card-body" id="body-summary"></div></div>
-            <div class="result-card" id="card-key_points"><div class="card-header">Key Points</div><div class="card-body" id="body-key_points"></div></div>
-            <div class="result-card" id="card-action_items"><div class="card-header">Action Items</div><div class="card-body" id="body-action_items"></div></div>
-            <div class="result-card" id="card-questions"><div class="card-header">Open Questions</div><div class="card-body" id="body-questions"></div></div>
-            <div class="result-card card-wide" id="card-quiz"><div class="card-header">Quiz</div><div class="card-body" id="body-quiz"></div></div>
+            <div class="result-card" id="card-summary">
+                <div class="card-header">Summary</div>
+                <div class="card-body" id="body-summary"></div>
+            </div>
+            <div class="result-card" id="card-key_points">
+                <div class="card-header">Key Points</div>
+                <div class="card-body" id="body-key_points"></div>
+            </div>
+            <div class="result-card" id="card-action_items">
+                <div class="card-header">Action Items</div>
+                <div class="card-body" id="body-action_items"></div>
+            </div>
+            <div class="result-card" id="card-questions">
+                <div class="card-header">Open Questions</div>
+                <div class="card-body" id="body-questions"></div>
+            </div>
+            <div class="result-card card-wide" id="card-quiz">
+                <div class="card-header">Quiz</div>
+                <div class="card-body" id="body-quiz"></div>
+            </div>
         </section>
-        <footer class="footer"><p>QuickRecap / Parallel AI analysis</p></footer>
+
+        <footer class="footer">
+            <p>QuickRecap / Parallel AI analysis pipeline / FastAPI + Whisper</p>
+        </footer>
     </div>
+
     <script src="/static/js/app.js"></script>
 </body>
 </html>
