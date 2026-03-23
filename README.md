@@ -1,4 +1,4 @@
-# QuickRecap
+# Quick Recap
 
 Paste any text or record your voice. 5 AI agents analyze it simultaneously.
 

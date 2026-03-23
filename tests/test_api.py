@@ -13,7 +13,7 @@ def test_health():
 def test_index_serves_html():
     resp = client.get("/")
     assert resp.status_code == 200
-    assert "QuickRecap" in resp.text
+    assert "Quick" in resp.text and "Recap" in resp.text
 
 
 def test_analyze_empty_text():
