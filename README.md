@@ -1,6 +1,6 @@
 # Quick Recap
 
-Paste text or record your voice. Get a clean, organized recap.
+AI-powered text and voice recap. Paste or record, get a clean rewrite instantly.
 
 **[Try it live](https://quick-recap-production.up.railway.app)** (free, no sign-up needed)
 
