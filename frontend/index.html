@@ -13,7 +13,7 @@
     <div class="app">
         <header class="header">
             <h1><span class="accent">Quick</span> Recap</h1>
-            <p class="tagline">Paste text or record your voice. 5 AI agents analyze it simultaneously.</p>
+            <p class="tagline">Paste text or record your voice. Get a clean, organized recap.</p>
         </header>
 
         <section class="input-section">
@@ -54,7 +54,7 @@
                 </div>
             </div>
 
-            <button class="analyze-btn" id="analyze-btn" onclick="analyze()">Analyze</button>
+            <button class="analyze-btn" id="analyze-btn" onclick="analyze()">Recap</button>
         </section>
 
         <div class="status-bar" id="status-bar" style="display:none;">
@@ -62,31 +62,13 @@
             <span id="status-text"></span>
         </div>
 
-        <section class="results-grid" id="results-grid" style="display:none;">
-            <div class="result-card" id="card-summary">
-                <div class="card-header">Summary</div>
-                <div class="card-body" id="body-summary"></div>
-            </div>
-            <div class="result-card" id="card-key_points">
-                <div class="card-header">Key Points</div>
-                <div class="card-body" id="body-key_points"></div>
-            </div>
-            <div class="result-card" id="card-action_items">
-                <div class="card-header">Action Items</div>
-                <div class="card-body" id="body-action_items"></div>
-            </div>
-            <div class="result-card" id="card-questions">
-                <div class="card-header">Open Questions</div>
-                <div class="card-body" id="body-questions"></div>
-            </div>
-            <div class="result-card card-wide" id="card-quiz">
-                <div class="card-header">Quiz</div>
-                <div class="card-body" id="body-quiz"></div>
-            </div>
+        <section class="result-section" id="result-section" style="display:none;">
+            <div class="result-header">Recap</div>
+            <div class="result-body" id="result-body"></div>
         </section>
 
         <footer class="footer">
-            <p>Quick Recap / Parallel AI analysis / FastAPI + Whisper</p>
+            <p>Quick Recap / AI text synthesizer / FastAPI + Whisper</p>
         </footer>
     </div>
 

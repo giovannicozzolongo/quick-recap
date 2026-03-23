@@ -1,14 +1,10 @@
-from src.agents import ANALYZERS
+from src.agents import RECAP_PROMPT
 
 
-def test_all_analyzers_defined():
-    expected = {"summary", "key_points", "action_items", "questions", "quiz"}
-    assert set(ANALYZERS.keys()) == expected
+def test_recap_prompt_exists():
+    assert len(RECAP_PROMPT) > 50
 
 
-def test_analyzers_have_required_fields():
-    for key, agent in ANALYZERS.items():
-        assert "label" in agent, f"{key} missing label"
-        assert "icon" in agent, f"{key} missing icon"
-        assert "prompt" in agent, f"{key} missing prompt"
-        assert len(agent["prompt"]) > 20, f"{key} prompt too short"
+def test_recap_prompt_has_key_instructions():
+    assert "dominant language" in RECAP_PROMPT.lower() or "same language" in RECAP_PROMPT.lower()
+    assert "filler" in RECAP_PROMPT.lower() or "repetition" in RECAP_PROMPT.lower()

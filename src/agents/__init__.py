@@ -1,2 +1,3 @@
-from src.agents.analyzers import ANALYZERS
-__all__ = ["ANALYZERS"]
+from src.agents.analyzers import RECAP_PROMPT
+
+__all__ = ["RECAP_PROMPT"]
