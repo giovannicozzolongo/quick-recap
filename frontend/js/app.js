@@ -5,7 +5,6 @@ let audioChunks = [];
 let recordingTimer = null;
 let recordingSeconds = 0;
 let transcriptReady = "";
-let isPaused = false;
 let isRecording = false;
 
 function updateCharCount() {
@@ -31,7 +30,7 @@ function formatTime(s) {
 function updateAnalyzeBtn() {
     const hasText = $("#text-input").value.trim().length > 0;
     const hasTranscript = transcriptReady.length > 0;
-    $("#analyze-btn").disabled = !(hasText || hasTranscript) || isRecording;
+    $("#analyze-btn").disabled = !(hasText || hasTranscript);
 }
 
 function resetText() {
@@ -43,17 +42,16 @@ function resetText() {
 
 function resetVoice() {
     if (mediaRecorder && mediaRecorder.state !== "inactive") {
-        mediaRecorder.stop();
+        mediaRecorder.stream.getTracks().forEach((t) => t.stop());
+        mediaRecorder = null;
     }
     audioChunks = [];
     transcriptReady = "";
     recordingSeconds = 0;
-    isPaused = false;
     isRecording = false;
     clearInterval(recordingTimer);
     $("#record-label").textContent = "Record";
     $("#record-btn").classList.remove("recording");
-    $("#pause-btn").style.display = "none";
     $("#recording-time").textContent = "";
     $("#transcript-preview").style.display = "none";
     $("#transcript-text").textContent = "";
@@ -61,113 +59,126 @@ function resetVoice() {
 }
 
 async function toggleRecording() {
-    // if recording or paused, stop
-    if (mediaRecorder && (mediaRecorder.state === "recording" || mediaRecorder.state === "paused")) {
-        mediaRecorder.stop();
-        return;
-    }
+    if (!mediaRecorder || mediaRecorder.state === "inactive") {
+        // start recording
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            audioChunks = [];
+            recordingSeconds = 0;
+            isRecording = true;
 
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaRecorder = new MediaRecorder(stream);
-        audioChunks = [];
-        recordingSeconds = 0;
-        isPaused = false;
-        isRecording = true;
-        updateAnalyzeBtn();
+            mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
 
-        mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
+            mediaRecorder.onstop = async () => {
+                mediaRecorder.stream.getTracks().forEach((t) => t.stop());
+                $("#record-btn").classList.remove("recording");
+                clearInterval(recordingTimer);
+                isRecording = false;
 
-        mediaRecorder.onstop = async () => {
-            stream.getTracks().forEach((t) => t.stop());
-            $("#record-btn").classList.remove("recording");
-            $("#pause-btn").style.display = "none";
-            clearInterval(recordingTimer);
-            isRecording = false;
-
-            if (audioChunks.length === 0) {
-                $("#record-label").textContent = "Record";
-                updateAnalyzeBtn();
-                return;
-            }
-
-            if (recordingSeconds < 3) {
-                setStatus("Recording too short. Please speak for at least 3 seconds.");
-                $("#record-label").textContent = "Record";
-                updateAnalyzeBtn();
-                return;
-            }
-
-            const blob = new Blob(audioChunks, { type: "audio/webm" });
-            setStatus("Transcribing audio...");
-
-            const formData = new FormData();
-            formData.append("audio", blob, "recording.webm");
-
-            try {
-                const resp = await fetch("/api/transcribe", { method: "POST", body: formData });
-                const data = await resp.json();
-                if (data.error) {
-                    setStatus("Transcription failed. Please try again.");
+                if (audioChunks.length === 0) {
                     $("#record-label").textContent = "Record";
                     updateAnalyzeBtn();
                     return;
                 }
-                transcriptReady = data.transcript;
-                $("#transcript-text").textContent = transcriptReady;
-                $("#transcript-preview").style.display = "block";
-                setStatus("Transcript ready. Click Recap when ready.");
-                setTimeout(() => setStatus("", false), 3000);
-            } catch {
-                setStatus("Transcription failed. Please try again.");
-            }
-            $("#record-label").textContent = "Record";
-            updateAnalyzeBtn();
-        };
 
-        mediaRecorder.start();
-        $("#record-label").textContent = "Stop";
-        $("#record-btn").classList.add("recording");
-        $("#pause-btn").style.display = "flex";
-        $("#pause-label").textContent = "Pause";
-        setStatus("", false);
-        recordingTimer = setInterval(() => {
-            if (!isPaused) {
-                recordingSeconds++;
-                $("#recording-time").textContent = formatTime(recordingSeconds);
-            }
-        }, 1000);
-    } catch {
-        setStatus("Microphone access denied.");
-        isRecording = false;
-        updateAnalyzeBtn();
-    }
-}
+                if (recordingSeconds < 3) {
+                    setStatus("Recording too short. Please speak for at least 3 seconds.");
+                    $("#record-label").textContent = "Record";
+                    updateAnalyzeBtn();
+                    return;
+                }
 
-function togglePause() {
-    if (!mediaRecorder) return;
-    if (mediaRecorder.state === "recording") {
+                const blob = new Blob(audioChunks, { type: "audio/webm" });
+                setStatus("Transcribing audio...");
+                $("#record-label").textContent = "Record";
+
+                const formData = new FormData();
+                formData.append("audio", blob, "recording.webm");
+
+                try {
+                    const resp = await fetch("/api/transcribe", { method: "POST", body: formData });
+                    const data = await resp.json();
+                    if (data.error) {
+                        setStatus("Transcription failed. Please try again.");
+                        updateAnalyzeBtn();
+                        return;
+                    }
+                    transcriptReady = data.transcript;
+                    $("#transcript-text").textContent = transcriptReady;
+                    $("#transcript-preview").style.display = "block";
+                    setStatus("Transcript ready. Click Recap when ready.");
+                    setTimeout(() => setStatus("", false), 3000);
+                } catch {
+                    setStatus("Transcription failed. Please try again.");
+                }
+                updateAnalyzeBtn();
+            };
+
+            mediaRecorder.start();
+            $("#record-label").textContent = "Pause";
+            $("#record-btn").classList.add("recording");
+            setStatus("", false);
+            recordingTimer = setInterval(() => {
+                if (isRecording) {
+                    recordingSeconds++;
+                    $("#recording-time").textContent = formatTime(recordingSeconds);
+                }
+            }, 1000);
+        } catch {
+            setStatus("Microphone access denied.");
+        }
+    } else if (mediaRecorder.state === "recording") {
+        // pause
         mediaRecorder.pause();
-        isPaused = true;
-        $("#pause-label").textContent = "Resume";
-        $("#record-label").textContent = "Paused";
+        isRecording = false;
+        $("#record-label").textContent = "Resume";
         $("#record-btn").classList.remove("recording");
     } else if (mediaRecorder.state === "paused") {
+        // resume
         mediaRecorder.resume();
-        isPaused = false;
-        $("#pause-label").textContent = "Pause";
-        $("#record-label").textContent = "Recording...";
+        isRecording = true;
+        $("#record-label").textContent = "Pause";
         $("#record-btn").classList.add("recording");
-    }
-}
-
-function stopRecording() {
-    if (mediaRecorder && mediaRecorder.state !== "inactive") {
-        mediaRecorder.stop();
     }
 }
 
 async function analyze() {
+    // stop recording if active
+    if (mediaRecorder && mediaRecorder.state !== "inactive") {
+        return new Promise((resolve) => {
+            mediaRecorder.onstop = async () => {
+                mediaRecorder.stream.getTracks().forEach((t) => t.stop());
+                $("#record-btn").classList.remove("recording");
+                clearInterval(recordingTimer);
+                isRecording = false;
+                $("#record-label").textContent = "Record";
+
+                if (audioChunks.length > 0 && recordingSeconds >= 3) {
+                    const blob = new Blob(audioChunks, { type: "audio/webm" });
+                    setStatus("Transcribing audio...");
+                    const formData = new FormData();
+                    formData.append("audio", blob, "recording.webm");
+                    try {
+                        const resp = await fetch("/api/transcribe", { method: "POST", body: formData });
+                        const data = await resp.json();
+                        if (!data.error) {
+                            transcriptReady = data.transcript;
+                            $("#transcript-text").textContent = transcriptReady;
+                            $("#transcript-preview").style.display = "block";
+                        }
+                    } catch {}
+                }
+                await doRecap();
+                resolve();
+            };
+            mediaRecorder.stop();
+        });
+    }
+    await doRecap();
+}
+
+async function doRecap() {
     const textInput = $("#text-input").value.trim();
     const text = textInput || transcriptReady;
 
