@@ -54,7 +54,6 @@ function resetVoice() {
     $("#record-label").textContent = "Record";
     $("#record-btn").classList.remove("recording");
     $("#pause-btn").style.display = "none";
-    $("#stop-btn").style.display = "none";
     $("#recording-time").textContent = "";
     $("#transcript-preview").style.display = "none";
     $("#transcript-text").textContent = "";
@@ -62,7 +61,11 @@ function resetVoice() {
 }
 
 async function toggleRecording() {
-    if (mediaRecorder && (mediaRecorder.state === "recording" || mediaRecorder.state === "paused")) return;
+    // if recording or paused, stop
+    if (mediaRecorder && (mediaRecorder.state === "recording" || mediaRecorder.state === "paused")) {
+        mediaRecorder.stop();
+        return;
+    }
 
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -79,7 +82,6 @@ async function toggleRecording() {
             stream.getTracks().forEach((t) => t.stop());
             $("#record-btn").classList.remove("recording");
             $("#pause-btn").style.display = "none";
-            $("#stop-btn").style.display = "none";
             clearInterval(recordingTimer);
             isRecording = false;
 
@@ -124,11 +126,10 @@ async function toggleRecording() {
         };
 
         mediaRecorder.start();
-        $("#record-label").textContent = "Recording...";
+        $("#record-label").textContent = "Stop";
         $("#record-btn").classList.add("recording");
         $("#pause-btn").style.display = "flex";
         $("#pause-label").textContent = "Pause";
-        $("#stop-btn").style.display = "flex";
         setStatus("", false);
         recordingTimer = setInterval(() => {
             if (!isPaused) {
