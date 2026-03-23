@@ -87,8 +87,11 @@ async def _run_recap(text: str):
         if not valid:
             yield {"data": json.dumps({"type": "error", "content": "The input doesn't contain meaningful content to recap. Please provide real text or a voice recording."})}
             return
-    except Exception:
-        pass
+    except Exception as e:
+        msg = str(e)
+        if "rate_limit" in msg.lower() or "429" in msg:
+            yield {"data": json.dumps({"type": "error", "content": "Service is busy right now. Please wait a minute and try again."})}
+            return
 
     try:
         async for chunk in _stream_recap(text):
