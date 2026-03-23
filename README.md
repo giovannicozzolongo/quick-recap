@@ -2,7 +2,7 @@
 
 Paste any text or record your voice. 5 AI agents analyze it simultaneously.
 
-**[Try it live](https://quick-recap.onrender.com)** (free, no sign-up needed)
+**[Try it live](https://quick-recap-production.up.railway.app)** (free, no sign-up needed)
 
 ![Python](https://img.shields.io/badge/python-3.11+-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115-green)
