@@ -1,6 +1,6 @@
 # Quick Recap
 
-Paste any text or record your voice. 5 AI agents analyze it simultaneously.
+Paste text or record your voice. Get a clean, organized recap.
 
 **[Try it live](https://quick-recap-production.up.railway.app)** (free, no sign-up needed)
 
@@ -12,13 +12,10 @@ Paste any text or record your voice. 5 AI agents analyze it simultaneously.
 
 1. You paste text or record audio via microphone
 2. If audio, Whisper transcribes it to text
-3. Five specialized AI agents analyze the text **in parallel**:
-   - **Summary**: one-paragraph overview
-   - **Key Points**: structured bullet points
-   - **Action Items**: next steps and tasks
-   - **Open Questions**: gaps and areas to explore
-   - **Quiz**: multiple-choice questions to test understanding
-4. All five results stream into the UI simultaneously
+3. An LLM rewrites the content as a clean, well-structured text
+4. The result streams in real time
+
+It removes filler words, fixes grammar, organizes content logically, and writes in the dominant language of the input. Useful for meeting notes, voice memos, messy drafts, or any text that needs cleaning up.
 
 ## Architecture
 
@@ -29,24 +26,21 @@ Input (text or audio)
 [Whisper STT] (if audio)
   |
   v
-Text ──┬──> Summary agent    ──> stream to UI
-       ├──> Key Points agent  ──> stream to UI
-       ├──> Action Items agent──> stream to UI
-       ├──> Questions agent   ──> stream to UI
-       └──> Quiz agent        ──> stream to UI
+[Input validation]
+  |
+  v
+[LLM recap] --> streamed to UI
 ```
-
-All 5 agents run as concurrent async tasks, each streaming via SSE.
 
 ## Tech stack
 
 | Component | Tech |
 |---|---|
-| Backend | Python, FastAPI, SSE, asyncio |
+| Backend | Python, FastAPI, SSE |
 | Speech-to-text | Whisper Large v3 via Groq |
-| Text analysis | Llama 3.3 70B via Groq (free) |
+| Text processing | Llama 3.3 70B via Groq (free) |
 | Frontend | Vanilla JS, CSS, MediaRecorder API |
-| Streaming | Server-Sent Events with parallel sources |
+| Streaming | Server-Sent Events |
 
 ## Quick start
 
@@ -67,16 +61,16 @@ make serve
 ```
 src/
   agents/
-    analyzers.py    # 5 agent definitions with prompts
+    analyzers.py    # recap prompt definition
   api/
-    main.py         # FastAPI app, SSE streaming, transcription
+    main.py         # FastAPI app, SSE streaming, transcription, validation
   config.py         # env vars and model config
 frontend/
-  index.html        # two-tab input (text/voice) + results grid
-  css/style.css     # dark theme dashboard
-  js/app.js         # SSE client, MediaRecorder, parallel rendering
+  index.html        # side-by-side text + voice input
+  css/style.css     # dark green theme
+  js/app.js         # SSE client, MediaRecorder, recording controls
 tests/
-  test_agents.py    # agent definition tests
+  test_agents.py    # prompt tests
   test_api.py       # API endpoint tests
 ```
 
