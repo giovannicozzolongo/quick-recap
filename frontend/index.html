@@ -7,65 +7,63 @@
     <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="app">
         <header class="header">
-            <a href="/" class="title-link"><h1><span class="accent">Quick</span> Recap</h1></a>
-            <p class="tagline">Paste text or record your voice. AI turns it into a clean, organized recap.</p>
+            <a href="/" class="logo-link">
+                <h1 class="logo"><span class="logo-accent">Quick</span> Recap</h1>
+            </a>
+            <p class="tagline">Paste text or record your voice. Get a clean recap.</p>
         </header>
 
         <section class="input-section">
-            <div class="input-columns">
-                <div class="input-col">
-                    <div class="col-header">
-                        <span class="col-title">Text</span>
-                        <button class="reset-btn" onclick="resetText()" title="Clear text">Clear</button>
+            <div class="input-grid">
+                <div class="input-card">
+                    <div class="card-head">
+                        <span class="card-label">Text</span>
+                        <button class="clear-btn" onclick="resetText()">Clear</button>
                     </div>
-                    <textarea id="text-input" placeholder="Paste your text here (meeting notes, article, lecture transcript, anything)..." rows="8" maxlength="10000" oninput="updateCharCount()"></textarea>
-                <div class="char-count" id="char-count">0 / 10,000</div>
+                    <textarea id="text-input" placeholder="Meeting notes, article, lecture transcript..." rows="8" maxlength="10000" oninput="updateCharCount()"></textarea>
+                    <div class="char-count" id="char-count">0 / 10,000</div>
                 </div>
 
-                <div class="input-divider"></div>
-
-                <div class="input-col">
-                    <div class="col-header">
-                        <span class="col-title">Voice</span>
-                        <button class="reset-btn" onclick="resetVoice()" title="Clear recording">Clear</button>
+                <div class="input-card">
+                    <div class="card-head">
+                        <span class="card-label">Voice</span>
+                        <button class="clear-btn" onclick="resetVoice()">Clear</button>
                     </div>
-                    <div class="voice-panel">
+                    <div class="voice-area">
                         <div class="voice-controls">
-                            <button class="record-btn" id="record-btn" onclick="toggleRecording()">
-                                <span class="record-icon" id="record-icon">&#9679;</span>
+                            <button class="rec-btn" id="record-btn" onclick="toggleRecording()">
+                                <span class="rec-dot" id="record-icon"></span>
                                 <span id="record-label">Record</span>
                             </button>
-                            <span class="recording-time" id="recording-time"></span>
+                            <span class="rec-time" id="recording-time"></span>
                         </div>
-                        <div class="transcript-preview" id="transcript-preview" style="display:none;">
-                            <label>Transcript:</label>
+                        <div class="transcript-box" id="transcript-preview" style="display:none;">
+                            <span class="transcript-label">Transcript</span>
                             <p id="transcript-text"></p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <button class="analyze-btn" id="analyze-btn" onclick="analyze()">Recap</button>
+            <div class="actions">
+                <button class="recap-btn" id="analyze-btn" onclick="analyze()">Recap</button>
+            </div>
         </section>
 
         <div class="status-bar" id="status-bar" style="display:none;">
-            <div class="status-dot"></div>
             <span id="status-text"></span>
         </div>
 
         <section class="result-section" id="result-section" style="display:none;">
-            <div class="result-header">Recap</div>
+            <div class="result-label">Recap</div>
             <div class="result-body" id="result-body"></div>
         </section>
-
-        <footer class="footer">
-            <p>Quick Recap / AI text synthesizer / FastAPI + Whisper</p>
-        </footer>
     </div>
 
     <script src="/static/js/app.js"></script>
